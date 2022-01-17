@@ -1,9 +1,5 @@
 import os
 
-os.system('apt update')
-os.system('apt upgrade')
-raw_input("Blablalbla..")
-
 os.system('apt install python3-pip python3-dev python3-venv build-essential libssl-dev libffi-dev python3-setuptools')
 os.system('apt install nano')
 os.system('apt remove apache2')
