@@ -27,15 +27,30 @@ python3 xD.py
 
 #### 4. Wewnątrz środowiska (env).
 
+Tworzenie i aktywacja środowiska:
 ```
 python3 -m venv flagaenv
 source flagaenv/bin/activate
+```
 
+Tworzenie zmiennej:
+```
 export FLASK_APP=app.py
+```
 
+Edycja pliku z nazwą domeny. Po wywołaniu nano wpisz po spacji nazwę swojej domeny np (bez "www."): 
+domena = nazwa_domeny.pl
+```
 nano settings.ini
-pip3 install -r requirements.txt
+```
 
+Instalacja wymaganych bibliotek.
+```
+pip3 install -r requirements.txt
+```
+
+Uruchom skrypt przygotowujący hosting w serwerze.
+```
 python3 xd.py
 ```
 
