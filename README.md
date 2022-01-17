@@ -1,20 +1,20 @@
 # flaga_test
 
-# 1. Login do serwera.
+#### 1. Login do serwera.
 
 ```
 ssh nazwa_uzytkownika@adres_ip
 ```
 
 
-# 2. Uaktualniamy paczki.
+#### 2. Uaktualniamy paczki (packages).
 
 ```
 apt update
 apt upgrade
 ```
 
-# 3. Instalujemy git'a.
+#### 3. Git.
 
 
 ```
@@ -25,25 +25,28 @@ cd flaga
 python3 xD.py
 ```
 
+#### 4. Wewnątrz środowiska (env).
 
-
+```
 python3 -m venv flagaenv
 source flagaenv/bin/activate
 
 export FLASK_APP=app.py
 
-apt install nano
 nano settings.ini
 pip3 install -r requirements.txt
-pip3 install wheel
-pip3 install gunicorn
 
 python3 xd.py
+```
 
 
+
+#### 5. Restartujemy nignxa i serwisy.
+
+```
 sudo systemctl start flaga.service
 sudo systemctl daemon-reload
 systemctl restart nginx
 sudo systemctl restart flaga.service
-
+```
 
