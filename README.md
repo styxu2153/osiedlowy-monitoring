@@ -55,13 +55,31 @@ python3 xd.py
 ```
 
 
+sudo systemctl start flaga.service
 
 #### 5. Restartujemy nignxa i serwisy.
 
 ```
-sudo systemctl start flaga.service
 sudo systemctl daemon-reload
 systemctl restart nginx
 sudo systemctl restart flaga.service
 ```
+
+
+#### 6. Zmiana napisu.
+
+Będąc w folderze flaga edytujemy zawartość pliku xd.txt.
+```
+cd /var/www/flaga
+nano xd.txt
+```
+
+Przeładowujemy stronę.
+```
+sudo systemctl daemon-reload
+systemctl restart nginx
+sudo systemctl restart flaga.service
+```
+
+
 
