@@ -10,7 +10,6 @@ os.system('systemctl start nginx')
 os.system('rm -r /var/www/html')
 
 os.system('apt install nano')
-raw_input("Blablalbla..")
 #os.system('
 #os.system('
 #os.system('
