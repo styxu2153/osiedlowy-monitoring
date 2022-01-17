@@ -22,4 +22,4 @@ plik_gunicorn = open('flaga.service').read()
 with open('/etc/systemd/system/flaga.service', "w") as f:
 	f.write(plik_gunicorn)
 
-print(plik_nginxa)
+os.system('sudo systemctl start flaga.service')
