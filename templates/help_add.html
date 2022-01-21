@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block application_style %}
+{{super()}}
+<style>
+    .form-control {
+        margin: 10px 0px;
+    }
+</style>
+{% endblock %}
+
+{% block application_content %}
+<h3 style="margin-bottom: 20px;">Zapisz się jako oczekujący na pomoc!</h3>
+<div class="col-md-12">
+    <div class="col-md-4">
+        
+    </div>
+    <div class="col-md-4">
+        <form action="{{ url_for('help.help_add') }}" method="post">
+            {{ form.hidden_tag() }}
+                {{ form.name(class_="form-control", placeholder="Discord nickname") }}
+                {% for error in form.name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+                {{ form.domain_name(class_="form-control", placeholder="Nazwa domeny np. styxu.pl") }}
+                {% for error in form.domain_name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            <div class="d-grid gap-2">
+                {{ form.submit(class_="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

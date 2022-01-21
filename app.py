@@ -6,11 +6,14 @@ import requests
 import os, sys, logging
 import csv
 
-#logging.basicConfig(filename="test.log", level=logging.DEBUG)
+logging.basicConfig(filename="test.log", level=logging.DEBUG)
 
 app=Flask(__name__)
 app.config.from_object(Config)
 crontab = Crontab(app)
+
+from help import bp as help_bp
+app.register_blueprint(help_bp)
 
 def encode_link(link: str) -> str:
     link = link.strip()
