@@ -1,15 +1,18 @@
-<!DOCTYPE>
-<html>
-<head>
-</head>
+{% extends "base.html" %}
 
-<body>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <h1 style="text-align:center">{{text}}</h1>
-</body>
 
-</html>
+{% block application_content %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Address</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for status in statuses %}
+          {% include '_link.html' %}
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}
