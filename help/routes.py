@@ -18,7 +18,8 @@ def help_add():
             writer.writerow(data_to_insert)
 
         domain_link = "http://" + domain_name
-        with open('./flagi.txt', 'a', encoding='UTF-8', newline="\n") as f:
+        with open('./flagi.txt', 'a', encoding='UTF-8') as f:
+
             f.write("\n")
             f.write(domain_link)
             
