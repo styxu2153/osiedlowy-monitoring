@@ -25,15 +25,19 @@ def get_html(link: str):
     except requests.exceptions.ConnectionError as err:
         return "CONNECTION ERROR"
 
-@crontab.job(minute="*/3")
+@crontab.job(minute="*/5")
 def http_GET():
+    data_to_work = []
     data = []   
     with open("flaga.csv", 'r', encoding="UTF-8") as f:
         reader = csv.reader(f)
 
         for row in reader:
-            data.append([row[0].strip(), row[1].strip(), get_html(row[1])])
+            data_to_work.append([row[0].strip(), row[1].strip()])
     
+    for row in data_to_work:
+        data.append([row[0], row[1], get_html(row[1])])
+
     with open('flaga.csv', 'w', encoding='UTF-8', newline="") as f:
         writer = csv.writer(f)
         
@@ -52,15 +56,17 @@ def index():
 @bp.route('/address-add', methods=['GET', 'POST'])
 def address_add():
     if request.method == "POST":
+        discord_name = request.form['discord_name']
         domain_name = request.form['domain_name']
         domain_link = "http://" + domain_name
         
-        with open('flagi.txt', 'a', encoding='UTF-8') as f:
-            
-            f.write("\n")
-            f.write(domain_link)
+        with open('flaga.csv', 'a', encoding='UTF-8') as f:
+            writer = csv.writer(f)
 
-        return redirect(url_for('index'))
+            writer.writerow([discord_name, domain_link])
+            
+
+        return redirect(url_for('flags.index'))
 
     return render_template('address_add.html')
 
