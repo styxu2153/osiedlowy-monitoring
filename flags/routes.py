@@ -25,11 +25,11 @@ def get_html(link: str):
     except requests.exceptions.ConnectionError as err:
         return "CONNECTION ERROR"
 
-@crontab.job(minute="*/5")
+@crontab.job(minute="*/8")
 def http_GET():
     data_to_work = []
     data = []   
-    with open("flaga.csv", 'r', encoding="UTF-8") as f:
+    with open("adresy.csv", 'r', encoding="UTF-8") as f:
         reader = csv.reader(f)
 
         for row in reader:
@@ -60,12 +60,10 @@ def address_add():
         domain_name = request.form['domain_name']
         domain_link = "http://" + domain_name
         
-        with open('flaga.csv', 'a', encoding='UTF-8') as f:
+        with open('adresy.csv', 'a', encoding='UTF-8') as f:
             writer = csv.writer(f)
-
             writer.writerow([discord_name, domain_link])
-            
-
+        
         return redirect(url_for('flags.index'))
 
     return render_template('address_add.html')
