@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block application_style %}
+{{super()}}
+<style>
+    .form-inline .form-control{
+        display: inline-block !important;
+        width: auto;
+        margin: 10px 0px;
+    }
+
+    #address_input {
+        width: 40%;
+    }
+
+</style>
+{% endblock %}
+
+{% block application_content %}
+<h5 style="margin-top: 10px;">Tu możesz dopisać swoją stronę do listy żeby podzielić się z innymi i obserwować jej status!</h5>
+<div class="col-md-12">
+    <div class="col-md-6">
+        <form class="form-inline" action="{{ url_for('flags.address_add') }}" method="post">
+            <div class="form-group">
+                <input type="text" class="form-control" id="address_input" placeholder="Discord nickname" name="discord_name">
+                <input type="text" class="form-control" id="address_input" placeholder="Nazwa domeny np. styxu.pl" name="domain_name">
+                <button class="btn btn-primary">Wyślij</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

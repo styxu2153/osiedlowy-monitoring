@@ -37,6 +37,10 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
+#databases
+*.csv
+*.txt
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -104,8 +108,10 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.flaskenv
 env/
 venv/
+flagaenv/
 ENV/
 env.bak/
 venv.bak/
