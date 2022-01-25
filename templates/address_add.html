@@ -21,10 +21,17 @@
 <div class="col-md-12">
     <div class="col-md-6">
         <form class="form-inline" action="{{ url_for('flags.address_add') }}" method="post">
+            {{ form.hidden_tag() }}
             <div class="form-group">
-                <input type="text" class="form-control" id="address_input" placeholder="Discord nickname" name="discord_name">
-                <input type="text" class="form-control" id="address_input" placeholder="Nazwa domeny np. styxu.pl" name="domain_name">
-                <button class="btn btn-primary">Wyślij</button>
+                {{ form.name(class_="form-control", placeholder="Discord nickname") }}
+                {% for error in form.name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+                {{ form.domain_name(class_="form-control", placeholder="Nazwa domeny np. styxu.pl") }}
+                {{ form.submit(class_="btn btn-primary") }}
+                {% for error in form.domain_name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
             </div>
         </form>
     </div>

@@ -1,13 +1,12 @@
 from flask import render_template, redirect, url_for, flash, request
 from flags import bp
-from flask_crontab import Crontab
 import requests
 import csv
 import time
 import os, sys, logging
-from app import app
-
-crontab = Crontab(app)
+from app import app, db
+from models import Flaga
+from flags.forms import AddressForm
 
 #logging.basicConfig(filename="test.log", level=logging.DEBUG)
 
@@ -25,46 +24,53 @@ def get_html(link: str):
     except requests.exceptions.ConnectionError as err:
         return "CONNECTION ERROR"
 
-@crontab.job(minute="*/8")
 def http_GET():
-    data_to_work = []
     data = []   
-    with open("adresy.csv", 'r', encoding="UTF-8") as f:
-        reader = csv.reader(f)
-
-        for row in reader:
-            data_to_work.append([row[0].strip(), row[1].strip()])
+    flagi  = Flaga.query.all()
     
-    for row in data_to_work:
-        data.append([row[0], row[1], get_html(row[1])])
+    for flaga in flagi:
+        data.append([flaga.discord_name, flaga.domain_name, get_html(flaga.domain_name)])
 
-    with open('flaga.csv', 'w', encoding='UTF-8', newline="") as f:
-        writer = csv.writer(f)
-        
-        for row in data:
-            writer.writerow(row)
+    for row in data:
+        flaga = Flaga.query.filter_by(domain_name=row[1]).first()
+        flaga.status = row[2]
+        db.session.commit()
 
 @bp.route('/')
 def index():
-    address_data = []
-    with open("flaga.csv", 'r', encoding='UTF-8') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            address_data.append([*row])
-    return render_template('index.html', statuses=address_data)
+    flagi = Flaga.query.all()
+    
+    return render_template('index.html', flagi=flagi)
 
 @bp.route('/address-add', methods=['GET', 'POST'])
 def address_add():
-    if request.method == "POST":
-        discord_name = request.form['discord_name']
-        domain_name = request.form['domain_name']
-        domain_link = "http://" + domain_name
+    form = AddressForm()
+    
+    if form.validate_on_submit():
+        discord_name = form.name.data
+        domain_link = "http://" + form.domain_name.data
         
-        with open('adresy.csv', 'a', encoding='UTF-8') as f:
-            writer = csv.writer(f)
-            writer.writerow([discord_name, domain_link])
-        
+        new_address = Flaga(discord_name=discord_name, domain_name=domain_link)
+        db.session.add(new_address)
+        db.session.commit()
+        flash('Registered website successfully!')
         return redirect(url_for('flags.index'))
 
-    return render_template('address_add.html')
+    return render_template('address_add.html', form=form)
 
+@bp.route('/refresh')
+def refresh():
+    http_GET()
+    return redirect(url_for('flags.index'))
+
+'''
+@bp.route('/address-migrate')
+def address_migrate():
+    with open('adresy.csv', encoding='UTF-8') as f:
+        reader = csv.reader(f)
+    
+        for row in reader:
+            flaga = Flaga(discord_name=row[0], domain_name=row[1])
+            db.session.add(flaga)
+            db.session.commit()
+'''
