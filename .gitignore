@@ -41,6 +41,7 @@ pip-delete-this-directory.txt
 *.csv
 *.txt
 *.db
+migrations/
 
 # Unit test / coverage reports
 htmlcov/

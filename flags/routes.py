@@ -1,12 +1,11 @@
 from flask import render_template, redirect, url_for, flash, request
 from flags import bp
-import requests
-import csv
-import time
 import os, sys, logging
-from app import app, db
+from app import app, db, crontab
 from models import Flaga
 from flags.forms import AddressForm
+import asyncio, aiohttp
+from pprint import pprint
 
 #logging.basicConfig(filename="test.log", level=logging.DEBUG)
 
@@ -17,25 +16,44 @@ def encode_link(link: str) -> str:
     link[1] = str(domain_name.encode('idna').decode('utf-8'))
     return "//".join(link)
 
-def get_html(link: str):
+async def get_http(session: aiohttp.ClientSession, flaga):
+    code = ""
     try:
-        page = requests.get(encode_link(link), verify=False)
-        return page.status_code
-    except requests.exceptions.ConnectionError as err:
-        return "CONNECTION ERROR"
+        async with session.get(flaga.domain_name, timeout=3) as response:
+            code = response.status
+            html = await response.text()
+    except:
+        code = "110"
+    return [flaga.discord_name, flaga.domain_name, code]
 
-def http_GET():
-    data = []   
+async def gather_https():
     flagi  = Flaga.query.all()
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for flaga in flagi:
+            tasks.append(get_http(session=session, flaga=flaga))
+
+        htmls = await asyncio.gather(*tasks)
+        return htmls
     
-    for flaga in flagi:
-        data.append([flaga.discord_name, flaga.domain_name, get_html(flaga.domain_name)])
-
-    for row in data:
-        flaga = Flaga.query.filter_by(domain_name=row[1]).first()
-        flaga.status = row[2]
-        db.session.commit()
-
+@crontab.job(minute="*")
+def http_GET():
+    if not os.path.isfile('run_condition.txt'):
+        file_cond = open("run_condition.txt", "x")
+        logging.warning('File created!')   
+        
+        data = asyncio.run(gather_https())
+        
+        for row in data:
+            flaga = Flaga.query.filter_by(domain_name=row[1]).first()
+            flaga.status = row[2]
+            db.session.commit()
+        file_cond.close()
+        os.remove('run_condition.txt')
+        logging.warning('File removed!')
+    else:
+        logging.warning('File  exists!')
+    
 @bp.route('/')
 def index():
     flagi = Flaga.query.all()
@@ -58,19 +76,5 @@ def address_add():
 
     return render_template('address_add.html', form=form)
 
-@bp.route('/refresh')
-def refresh():
-    http_GET()
-    return redirect(url_for('flags.index'))
 
-'''
-@bp.route('/address-migrate')
-def address_migrate():
-    with open('adresy.csv', encoding='UTF-8') as f:
-        reader = csv.reader(f)
-    
-        for row in reader:
-            flaga = Flaga(discord_name=row[0], domain_name=row[1])
-            db.session.add(flaga)
-            db.session.commit()
-'''
+
