@@ -9,21 +9,14 @@ from pprint import pprint
 
 #logging.basicConfig(filename="test.log", level=logging.DEBUG)
 
-def encode_link(link: str) -> str:
-    link = link.strip()
-    link = link.split("//")
-    domain_name = link[1]
-    link[1] = str(domain_name.encode('idna').decode('utf-8'))
-    return "//".join(link)
-
 async def get_http(session: aiohttp.ClientSession, flaga):
     code = ""
     try:
         async with session.get(flaga.domain_name, timeout=3) as response:
             code = response.status
-            html = await response.text()
+            #html = await response.text()
     except:
-        code = "110"
+        code = "CONNECTION ERROR"
     return [flaga.discord_name, flaga.domain_name, code]
 
 async def gather_https():
@@ -33,13 +26,13 @@ async def gather_https():
         for flaga in flagi:
             tasks.append(get_http(session=session, flaga=flaga))
 
-        htmls = await asyncio.gather(*tasks)
-        return htmls
+        data = await asyncio.gather(*tasks)
+        return data
     
 @crontab.job(minute="*")
 def http_GET():
-    if not os.path.isfile('run_condition.txt'):
-        file_cond = open("run_condition.txt", "x")
+    if not os.path.isfile('/tmp/run_condition.txt'):
+        file_cond = open("/tmp/run_condition.txt", "x")
         logging.warning('File created!')   
         
         data = asyncio.run(gather_https())
@@ -49,7 +42,7 @@ def http_GET():
             flaga.status = row[2]
             db.session.commit()
         file_cond.close()
-        os.remove('run_condition.txt')
+        os.remove('/tmp/run_condition.txt')
         logging.warning('File removed!')
     else:
         logging.warning('File  exists!')
@@ -66,9 +59,13 @@ def address_add():
     
     if form.validate_on_submit():
         discord_name = form.name.data
-        domain_link = "http://" + form.domain_name.data
-        
-        new_address = Flaga(discord_name=discord_name, domain_name=domain_link)
+        domain_name = form.domain_name.data
+        if "http://" in domain_name or "https://" in domain_name:
+            domain_name = domain_name
+        else:
+            domain_name = "http://" + domain_name
+            
+        new_address = Flaga(discord_name=discord_name, domain_name=domain_name)
         db.session.add(new_address)
         db.session.commit()
         flash('Registered website successfully!')

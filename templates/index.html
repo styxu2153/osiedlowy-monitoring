@@ -1,20 +1,37 @@
 {% extends "base.html" %}
 
+{% block application_styles %}
+{{super()}}
+<style>
+  
+</style>
+{% endblock %}
 
 {% block application_content %}
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Discord nickname</th>
-          <th>Adres strony</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for flaga in flagi %}
-          {% include '_link.html' %}
-        {% endfor %}
-      </tbody>
-    </table>
+    <!--<h4 style="margin-left: 8px; margin-top: 5px;">Zawisło {{ flagi|length }} flag!</h4>-->
+    <div class="container" style="width: 90%;">
+      <table id="flagsTable" class="table display dataTable" style="display: none;">
+        <thead>
+          <tr>
+            <th >Discord nickname</th>
+            <th >Adres strony</th>
+            <th >Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for flaga in flagi %}
+            {% include '_link.html' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}
+
+{% block application_scripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#flagsTable').DataTable();
+    $('#flagsTable').show();
+});
+</script>
 {% endblock %}
